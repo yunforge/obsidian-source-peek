@@ -1,0 +1,30 @@
+{
+  "name": "obsidian-source-peek",
+  "version": "1.0.0",
+  "description": "Obsidian plugin: hover a link to preview the lines of a source file, a file in a repository, or one heading of a web page.",
+  "author": "yunforge <meng.w1016@outlook.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yunforge/obsidian-source-peek.git"
+  },
+  "homepage": "https://github.com/yunforge/obsidian-source-peek#readme",
+  "bugs": {
+    "url": "https://github.com/yunforge/obsidian-source-peek/issues"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "hover",
+    "preview"
+  ],
+  "private": true,
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "test": "node test/run.js",
+    "test:core": "node test/run.js --core"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

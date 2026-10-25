@@ -1,0 +1,50 @@
+name: Release
+
+# Pushing a version tag opens a draft release with the built, attested assets attached;
+# publishing it is manual, so a release is never live before its assets are there.
+#
+# This mirrors Obsidian's own reference workflow (obsidian-sample-plugin#189) step for
+# step — same attest action major, same release action — because their community review
+# verifies the attestation and we have no way to see what it accepts.
+
+on:
+  push:
+    tags: ["[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: write # create the release
+  id-token: write # mint the OIDC token for Sigstore
+  attestations: write # publish the attestation
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
+
+      - name: Open a draft release with the assets attached
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            main.js
+            manifest.json
+            styles.css
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

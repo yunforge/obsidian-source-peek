@@ -1,0 +1,210 @@
+/* Source Peek — the floating panel, and the bits of the settings pane it needs.
+
+   The panel is our own element on <body>, not Obsidian's popover, because the reader is
+   meant to be able to move into it, scroll it and select from it. */
+
+.cp-hidden {
+  display: none !important;
+}
+
+.cp-hover {
+  position: fixed;
+  z-index: var(--layer-popover, 30);
+
+  /* One knob for line height: the target-line band is placed with it, so the band and the
+     text it sits behind cannot drift apart. It carries its unit (1.5em, not the bare
+     number 1.5) because the band's geometry computes `calc(var(--cp-lh) * N)` — a unitless
+     variable makes that a plain number, which is no length, and CSS throws the whole
+     top/height declaration away. For `line-height` itself the two spellings agree; for the
+     calc only the length works. */
+  --cp-lh: 1.5em;
+
+  max-width: min(760px, 82vw);
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m, 8px);
+  box-shadow: var(--shadow-s, 0 4px 12px rgba(0, 0, 0, 0.25));
+  font-size: var(--font-ui-smaller, 12px);
+  overflow: hidden;
+}
+
+.cp-header {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary-alt, var(--background-secondary));
+  color: var(--text-muted);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller, 12px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cp-body {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 8px 10px;
+  /* The preview is for reading, so it is selectable — unlike a tooltip. */
+  user-select: text;
+}
+
+/* The band marking the lines the link actually named. It sits behind the code, so the
+   syntax colours stay on top of it. Geometry: the inline calc() from preview.js places it
+   per line; the concrete top/height here is the fallback that keeps it painting when that
+   calc is ever dropped again — CSS discards an invalid declaration silently, and without a
+   fallback the band collapsed to nothing (a unitless --cp-lh once did exactly that). 1.5em
+   tracks the same font the calc resolves against, so the fallback is one line tall wherever
+   the reader's font size has moved it. */
+.cp-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1.5em;
+  background: var(--cp-highlight-color, var(--text-selection));
+  pointer-events: none;
+}
+
+.cp-body pre.cp-code {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-family: var(--font-monospace);
+  font-size: 1em;
+  line-height: var(--cp-lh);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.cp-body pre.cp-code code {
+  background: transparent;
+  padding: 0;
+  font-size: 1em;
+  line-height: var(--cp-lh);
+}
+
+/* --- web pages ---------------------------------------------------------- */
+
+.cp-page-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-normal);
+}
+
+.cp-h,
+.cp-p,
+.cp-li,
+.cp-quote {
+  margin: 0 0 6px;
+  line-height: 1.45;
+}
+
+.cp-h {
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
+h1.cp-h { font-size: 1.5em; }
+h2.cp-h { font-size: 1.3em; }
+h3.cp-h { font-size: 1.15em; }
+h4.cp-h,
+h5.cp-h,
+h6.cp-h { font-size: 1em; }
+
+.cp-li {
+  padding-left: 0.9em;
+  color: var(--text-normal);
+}
+
+.cp-quote {
+  margin-left: 0;
+  padding-left: 0.8em;
+  border-left: 2px solid var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.cp-web-pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* --- messages ----------------------------------------------------------- */
+
+.cp-error,
+.cp-note {
+  padding: 4px 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.cp-error {
+  color: var(--text-error);
+}
+
+/* --- settings pane ------------------------------------------------------ */
+
+.cp-settings-help {
+  margin-top: 1.5em;
+  padding-top: 1em;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.cp-settings-help p {
+  margin: 0.6em 0 0.3em;
+  color: var(--text-muted);
+}
+
+.cp-settings-help pre {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--background-primary-alt, var(--background-secondary));
+  border-radius: var(--radius-s, 4px);
+  font-size: var(--font-ui-smaller, 12px);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.cp-settings-help .cp-settings-note {
+  font-style: italic;
+}
+
+/* Inline code inside a page's prose: a command in a sentence should read as a command,
+   not as the sentence's own words. */
+.cp-inline-code {
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-s, 4px);
+  background: var(--background-primary-alt, var(--background-primary));
+  border: 1px solid var(--background-modifier-border);
+  font-family: var(--font-monospace);
+  font-size: 0.92em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* A code block from a page: its own box, and it may scroll sideways rather than wrap,
+   because indentation is meaning in code. */
+.cp-body pre.cp-code.cp-web-pre {
+  margin: 6px 0;
+  padding: 8px 10px;
+  background: var(--background-primary-alt, var(--background-primary));
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s, 4px);
+  white-space: pre;
+  overflow-x: auto;
+  font-size: 0.95em;
+}
+
+.cp-li-bullet {
+  display: inline-block;
+  width: 1.1em;
+  color: var(--text-muted);
+}
+

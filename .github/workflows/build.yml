@@ -1,0 +1,33 @@
+name: Build
+
+# Builds the plugin and checks that the committed artifacts match a fresh build, so a PR
+# (or a push to main) cannot land a stale bundle. Runs the whole test suite: the plugin is
+# self-contained, so every test runs in plain Node with no fixtures to set up.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      # styles.css is generated too — the build stamps the version into it — so checking
+      # main.js alone would let a stale stylesheet ship unnoticed.
+      - name: Verify the built files are in sync with src/
+        run: |
+          if ! git diff --exit-code -- main.js styles.css; then
+            echo "::error::main.js or styles.css is out of date. Run 'npm run build' and commit the result."
+            exit 1
+          fi
