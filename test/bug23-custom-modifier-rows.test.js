@@ -65,11 +65,9 @@ class Setting {
   }
 }
 
-// Load `src/settings-tab.js` against the stubs above, with English labels pinned (the real
-// `i18n` reads Obsidian's language from `window.localStorage`, which a test process lacks).
+// Load `src/settings-tab.js` against the stubs above. English labels come out on their
+// own: the stub below has no `moment`, so the real `i18n` falls back to its default.
 function loadTab() {
-  const realWindow = global.window;
-  global.window = { localStorage: { getItem: () => 'en' } };
   const origLoad = Module._load;
   Module._load = function (request) {
     if (request === 'obsidian') {
@@ -94,7 +92,6 @@ function loadTab() {
     return require(path.join(ROOT, 'src', 'settings-tab.js'));
   } finally {
     Module._load = origLoad;
-    global.window = realWindow;
   }
 }
 

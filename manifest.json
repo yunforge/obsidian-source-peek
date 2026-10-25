@@ -1,7 +1,7 @@
 {
   "id": "source-peek",
   "name": "Source Peek",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minAppVersion": "1.4.0",
   "description": "Rest the pointer on a link and read what it points at: lines of a source file, a file in a repository, or one heading of a web page.",
   "author": "yunforge",

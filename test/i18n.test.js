@@ -2,23 +2,33 @@
 
 // i18n: which language is picked, what happens when a key is missing, and plurals.
 //
-// The module reads Obsidian's language from localStorage, so these tests supply their own
-// `window` before requiring it. The module is loaded fresh for each case because it
-// resolves its dictionary once, at load — which is the behaviour worth pinning down.
+// The module asks Obsidian's own `moment` for the UI language, so these tests intercept
+// the `obsidian` require and supply a moment whose locale answers a tag. The module is
+// loaded fresh for each case because it resolves its dictionary once, at load — which is
+// the behaviour worth pinning down.
 
 const assert = require('assert/strict');
+const Module = require('module');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 
 // Load src/i18n.js as if Obsidian had been set to `tag`.
 function loadWith(tag) {
-  global.window = { localStorage: { getItem: (k) => (k === 'language' ? tag : null) } };
-  const file = path.join(ROOT, 'src', 'i18n.js');
-  delete require.cache[require.resolve(file)];
-  const mod = require(file);
-  mod.initI18n();
-  return mod;
+  const origLoad = Module._load;
+  Module._load = function (request) {
+    if (request === 'obsidian') return { moment: { locale: () => tag } };
+    return origLoad.apply(this, arguments);
+  };
+  try {
+    const file = path.join(ROOT, 'src', 'i18n.js');
+    delete require.cache[require.resolve(file)];
+    const mod = require(file);
+    mod.initI18n();
+    return mod;
+  } finally {
+    Module._load = origLoad;
+  }
 }
 
 function section(label, fn) {

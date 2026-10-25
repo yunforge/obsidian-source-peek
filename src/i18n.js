@@ -19,10 +19,10 @@ let language = FALLBACK;
 let dict = LOCALES[FALLBACK];
 let pluralRules = null;
 
-// Obsidian keeps its language in localStorage under `language`, as a tag like `zh`,
-// `zh-CN` or `en-GB`. Matching is widest-first: the full tag, then its base language,
-// then the fallback. That way `zh-TW` finds `zh` without every locale having to list
-// every regional variant.
+// Obsidian exposes its UI language through the `moment` it re-exports: `moment.locale()`
+// answers a tag like `zh-cn` or `en-gb`. Matching is widest-first: the full tag, then its
+// base language, then the fallback. That way `zh-TW` finds `zh` without every locale
+// having to list every regional variant.
 function resolveLanguage(tag) {
   const lower = String(tag || '').toLowerCase();
   if (!lower) return FALLBACK;
@@ -34,9 +34,10 @@ function resolveLanguage(tag) {
 function detectLanguage() {
   let tag = '';
   try {
-    tag = window.localStorage.getItem('language') || '';
+    const { moment } = require('obsidian');
+    if (moment && typeof moment.locale === 'function') tag = String(moment.locale() || '');
   } catch {
-    // No localStorage (a test process, or a locked-down window): fall back.
+    // No obsidian module (a test process): fall back.
     tag = '';
   }
   return resolveLanguage(tag);

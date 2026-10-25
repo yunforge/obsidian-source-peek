@@ -1,4 +1,4 @@
-/* Source Peek 1.0.0 — bundled from src/ by esbuild. Do not edit directly; edit src/ and run "npm run build". */
+/* Source Peek 1.0.1 — bundled from src/ by esbuild. Do not edit directly; edit src/ and run "npm run build". */
 "use strict";
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __commonJS = (cb, mod) => function __require() {
@@ -1732,7 +1732,8 @@ var require_i18n = __commonJS({
     function detectLanguage() {
       let tag = "";
       try {
-        tag = window.localStorage.getItem("language") || "";
+        const { moment } = require("obsidian");
+        if (moment && typeof moment.locale === "function") tag = String(moment.locale() || "");
       } catch (e) {
         tag = "";
       }

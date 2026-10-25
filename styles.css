@@ -1,11 +1,13 @@
-/* Source Peek 1.0.0 — assembled from src/styles.css by "npm run build". Do not edit directly. */
+/* Source Peek 1.0.1 — assembled from src/styles.css by "npm run build". Do not edit directly. */
 /* Source Peek — the floating panel, and the bits of the settings pane it needs.
 
    The panel is our own element on <body>, not Obsidian's popover, because the reader is
    meant to be able to move into it, scroll it and select from it. */
 
-.cp-hidden {
-  display: none !important;
+/* The element always carries both classes, so the pair outranks `.cp-hover`'s own
+   `display: flex` without `!important`. */
+.cp-hover.cp-hidden {
+  display: none;
 }
 
 .cp-hover {

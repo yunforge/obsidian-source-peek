@@ -52,8 +52,6 @@ function texts(node) {
 module.exports = {
   name: 'bug36: a code window past the cap says so, like the web path does',
   async run() {
-    const realWindow = global.window;
-    global.window = { localStorage: { getItem: () => 'en' } };
     require('../src/i18n').initI18n();
 
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'source-peek-bug36-'));
@@ -91,7 +89,6 @@ module.exports = {
       assert.equal(code2.text, 'line-2\nline-3\nline-4\nline-5\nline-6\nline-7\nline-8\nline-9');
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
-      global.window = realWindow;
     }
   },
 };

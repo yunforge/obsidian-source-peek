@@ -94,9 +94,9 @@ module.exports = {
 
     try {
       // The preview layer looks its messages up, so the dictionary has to be resolved
-      // before anything is built. These tests assert the English wording.
+      // before anything is built. These tests assert the English wording, which is what
+      // the stub yields: it has no `moment`, so the language falls back.
       global.window = global.window || {};
-      global.window.localStorage = { getItem: () => 'en' };
       require('../src/i18n').initI18n();
 
       const { Preview } = require('../src/preview');

@@ -1,6 +1,6 @@
 {
   "name": "obsidian-source-peek",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Obsidian plugin: hover a link to preview the lines of a source file, a file in a repository, or one heading of a web page.",
   "author": "yunforge <meng.w1016@outlook.com>",
   "license": "MIT",
