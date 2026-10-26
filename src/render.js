@@ -67,8 +67,8 @@ function grammarFor(P, prismId) {
 }
 
 // A <pre><code> holding `text`, highlighted for `prismId` when a grammar is available.
-// No `language-*` class is attached: a theme would paint its own opaque code-block
-// background over the highlight band that sits behind the text.
+// No `language-*` class is attached: a theme would repaint the block with its own opaque
+// code-block styling, which is not this panel's.
 async function renderCode(parent, text, prismId) {
   const P = text.split('\n').length <= PRISM_MAX_LINES ? await ensurePrism() : null;
   const grammar = grammarFor(P, prismId);

@@ -1872,20 +1872,15 @@ var require_preview = __commonJS({
           return true;
         }
         if (!ctx.isCurrent()) return false;
-        const first = Math.max(0, target.from - window2.startLine);
-        const count = Math.max(1, Math.min(window2.lines.length - first, target.to - target.from + 1));
-        const band = body.createDiv({ cls: "cp-band" });
-        band.style.top = "calc(var(--cp-lh) * " + first + ")";
-        band.style.height = "calc(var(--cp-lh) * " + count + ")";
         const text = window2.lines.join("\n");
         const lang = langFor(target.path);
-        await renderCode(body, text, lang);
+        const pre = await renderCode(body, text, lang);
         if (!ctx.isCurrent()) return false;
         if (window2.truncated) {
           body.createDiv({ cls: "cp-note", text: plural("preview.note.truncatedLines", window2.lines.length) });
         }
         return () => {
-          body.scrollTop = Math.max(0, band.offsetTop + band.offsetHeight / 2 - body.clientHeight / 2);
+          body.scrollTop = Math.max(0, pre.offsetTop + pre.offsetHeight / 2 - body.clientHeight / 2);
         };
       }
       async buildWeb(target, body, ctx) {

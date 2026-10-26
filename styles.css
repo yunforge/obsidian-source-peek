@@ -14,12 +14,8 @@
   position: fixed;
   z-index: var(--layer-popover, 30);
 
-  /* One knob for line height: the target-line band is placed with it, so the band and the
-     text it sits behind cannot drift apart. It carries its unit (1.5em, not the bare
-     number 1.5) because the band's geometry computes `calc(var(--cp-lh) * N)` — a unitless
-     variable makes that a plain number, which is no length, and CSS throws the whole
-     top/height declaration away. For `line-height` itself the two spellings agree; for the
-     calc only the length works. */
+  /* One knob for the code's line height: the <pre> and its <code> both take theirs from
+     it, so the two cannot drift apart. */
   --cp-lh: 1.5em;
 
   max-width: min(760px, 82vw);
@@ -56,23 +52,6 @@
   padding: 8px 10px;
   /* The preview is for reading, so it is selectable — unlike a tooltip. */
   user-select: text;
-}
-
-/* The band marking the lines the link actually named. It sits behind the code, so the
-   syntax colours stay on top of it. Geometry: the inline calc() from preview.js places it
-   per line; the concrete top/height here is the fallback that keeps it painting when that
-   calc is ever dropped again — CSS discards an invalid declaration silently, and without a
-   fallback the band collapsed to nothing (a unitless --cp-lh once did exactly that). 1.5em
-   tracks the same font the calc resolves against, so the fallback is one line tall wherever
-   the reader's font size has moved it. */
-.cp-band {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 1.5em;
-  background: var(--cp-highlight-color, var(--text-selection));
-  pointer-events: none;
 }
 
 .cp-body pre.cp-code {

@@ -118,22 +118,13 @@ class Preview {
     }
     if (!ctx.isCurrent()) return false;
 
-    // The band sits behind the named lines. It is the whole body now, so it starts at the
-    // top — kept as a band rather than a background so a theme's selection colour shows
-    // through the same way it does in a longer preview.
-    const first = Math.max(0, target.from - window.startLine);
-    const count = Math.max(1, Math.min(window.lines.length - first, target.to - target.from + 1));
-    const band = body.createDiv({ cls: 'cp-band' });
-    band.style.top = 'calc(var(--cp-lh) * ' + first + ')';
-    band.style.height = 'calc(var(--cp-lh) * ' + count + ')';
-
     const text = window.lines.join('\n');
     // renderCode owns the tokenizing budget: it draws plain rather than hand Prism a
     // snippet past PRISM_MAX_LINES, so the caller does not pre-check. (The window read
     // off disk is capped far below that line count anyway; a web <pre> is the shape that
     // can exceed it.)
     const lang = langFor(target.path);
-    await renderCode(body, text, lang);
+    const pre = await renderCode(body, text, lang);
     if (!ctx.isCurrent()) return false;
 
     // A range wider than the read window (MAX_WINDOW_LINES) shows what fits; saying so is
@@ -142,9 +133,10 @@ class Preview {
       body.createDiv({ cls: 'cp-note', text: plural('preview.note.truncatedLines', window.lines.length) });
     }
 
-    // Centre the marked lines once the shell has laid the element out.
+    // Centre the code once the shell has laid the element out. The window is exactly the
+    // lines the link named, so the code's middle is the middle of what was asked for.
     return () => {
-      body.scrollTop = Math.max(0, band.offsetTop + band.offsetHeight / 2 - body.clientHeight / 2);
+      body.scrollTop = Math.max(0, pre.offsetTop + pre.offsetHeight / 2 - body.clientHeight / 2);
     };
   }
 
